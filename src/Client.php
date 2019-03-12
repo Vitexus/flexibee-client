@@ -206,13 +206,14 @@ class Client extends ObjectPrototype
     /**
      * @param array<mixed> $evidenceData
      * @param int|null $id
+     * @param bool $dryRun
      * @return \EcomailFlexibee\Http\Response\Response
      * @throws \EcomailFlexibee\Exception\EcomailFlexibeeConnectionError
      * @throws \EcomailFlexibee\Exception\EcomailFlexibeeInvalidAuthorization
      * @throws \EcomailFlexibee\Exception\EcomailFlexibeeRequestError
      * @throws \EcomailFlexibee\Exception\EcomailFlexibeeSaveFailed
      */
-    public function save(array $evidenceData, ?int $id): Response
+    public function save(array $evidenceData, ?int $id, bool $dryRun = false): Response
     {
         if ($id !== null) {
             $evidenceData['id'] = $id;
@@ -220,9 +221,8 @@ class Client extends ObjectPrototype
 
         $postData = [];
         $postData[$this->config->getEvidence()] = $evidenceData;
-
-        $response = $this->makeRequest(Method::get(Method::PUT), $this->queryBuilder->createUriByEvidenceOnly([]), $postData);
-
+        $uriParameters = $dryRun ? ['dry-run' => 'true'] : [];
+        $response = $this->makeRequest(Method::get(Method::PUT), $this->queryBuilder->createUriByEvidenceOnly($uriParameters), $postData);
         $statisticsData = $response->getStatistics();
 
         if ((int) $statisticsData['created'] === 0 && (int) $statisticsData['updated'] === 0) {
@@ -311,7 +311,7 @@ class Client extends ObjectPrototype
 
     /**
      * @param \EcomailFlexibee\Http\Method $httpMethod
-     * @param string $section
+     * @param mixed $queryFilterOrId
      * @param array<mixed> $uriParameters
      * @param array<mixed> $postFields
      * @param array<string> $headers
@@ -322,7 +322,7 @@ class Client extends ObjectPrototype
      */
     public function callRequest(
         Method $httpMethod,
-        string $section,
+        $queryFilterOrId,
         array $uriParameters,
         array $postFields,
         array $headers
@@ -330,7 +330,7 @@ class Client extends ObjectPrototype
     {
         $response = $this->makeRequest(
             $httpMethod,
-            $this->queryBuilder->createUri($section, $uriParameters),
+            $this->queryBuilder->createUri($queryFilterOrId, $uriParameters),
             $postFields,
             $headers
         );
