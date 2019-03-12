@@ -38,6 +38,11 @@ class FlexibeeResponse extends ObjectPrototype implements Response
     private $statistics;
 
     /**
+     * @var int|null
+     */
+    private $rowCount;
+
+    /**
      * FlexibeeResponse constructor.
      *
      * @param int $statusCode
@@ -52,6 +57,7 @@ class FlexibeeResponse extends ObjectPrototype implements Response
         ?float $version,
         bool $success,
         ?string $message,
+        ?int $rowCount,
         array $data = [],
         array $statistics = []
     )
@@ -62,6 +68,7 @@ class FlexibeeResponse extends ObjectPrototype implements Response
         $this->statusCode = $statusCode;
         $this->data = $data;
         $this->statistics = $statistics;
+        $this->rowCount = $rowCount;
     }
 
     public function getVersion(): ?float
@@ -98,6 +105,11 @@ class FlexibeeResponse extends ObjectPrototype implements Response
     public function getStatistics(): array
     {
         return $this->statistics;
+    }
+
+    public function getRowCount(): ?int
+    {
+        return $this->rowCount;
     }
 
 }

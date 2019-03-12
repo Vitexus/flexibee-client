@@ -29,10 +29,16 @@ final class ResponseFactory extends ObjectPrototype
         $message = null;
         $success = false;
         $statistics = [];
+        $rowCount = null;
 
         if (isset($data['@version'])) {
             $version = (float) $data['@version'];
             unset($data['@version']);
+        }
+
+        if (isset($data['@rowCount'])) {
+            $rowCount = (int) $data['@rowCount'];
+            unset($data['@rowCount']);
         }
 
         if (isset($data['message'])) {
@@ -71,6 +77,7 @@ final class ResponseFactory extends ObjectPrototype
             $version,
             $success,
             $message,
+            $rowCount,
             $results,
             $statistics
         );
